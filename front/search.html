@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Posts</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.post {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.post h3 {
+    margin: 0;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Search Posts</h1>
+        <input type="text" id="searchInput" placeholder="Search for posts..." />
+        
+        <h2>Posts</h2>
+        <div id="postList"></div>
+    </div>
+
+    <script >
+document.getElementById('searchInput').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    displayPosts(searchTerm);
+});
+
+// Function to display posts based on the search term
+function displayPosts(searchTerm) {
+    const postList = document.getElementById('postList');
+    postList.innerHTML = ''; // Clear previous results
+
+    const filteredPosts = posts.filter(post => 
+        post.title.toLowerCase().includes(searchTerm) || 
+        post.content.toLowerCase().includes(searchTerm)
+    );
+
+    if (filteredPosts.length === 0) {
+        postList.innerHTML = '<p>No posts found.</p>';
+        return;
+    }
+
+    filteredPosts.forEach(post => {
+        const postDiv = document.createElement('div');
+        postDiv.classList.add('post');
+
+        const postTitle = document.createElement('h3');
+        postTitle.innerText = post.title;
+
+        const postContent = document.createElement('p');
+        postContent.innerText = post.content;
+
+        postDiv.appendChild(postTitle);
+        postDiv.appendChild(postContent);
+        postList.appendChild(postDiv);
+    });
+}
+
+// Initial display of all posts
+displayPosts('');
+
+    </script>
+</body>
+</html>

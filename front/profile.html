@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>personal profile</title>
+    <style>
+        body {
+    background-image: url('WMCJsIXhSvyuLrX7A3HUd6UhCDM.avif');
+    background-repeat:no-repeat;
+    background-size:cover;
+    font-family: Arial, sans-serif;
+    display: flex;
+    background-color: rgb(246, 213, 171);
+    height: 100vh;
+}
+.profile-header { 
+    margin-bottom: 20px;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.avatar {
+    margin-right: 20px;
+}
+
+.avatar img {
+    border-radius: 50%;
+}
+
+.details {
+    flex: 1;
+}
+
+.details h2, .details p {
+    margin: 5px 0;
+}
+
+button {
+    padding: 10px;
+    background-color: #175617;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-form {
+    margin-top: 20px;
+}
+
+.edit-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+#postForm {
+    display: flex;
+    flex-direction: column;
+}
+
+input, textarea {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px;
+    background-color: #0d0d0d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color:  #175617;
+}
+
+.post {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+}
+.like-section {
+    margin-top: 10px;
+}
+
+.like-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.like-button:hover {
+    background-color: #0056b3;
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="profile-header">
+            <h1>Profile</h1>
+        </div>
+        <div class="profile-info">
+            <div class="avatar">
+                <img src="https://via.placeholder.com/150" alt="personal image">
+            </div>
+            <div class="details">
+                <h2 id="name">enter your name</h2>
+                <p id="email">enter your email</p>
+                <p id="phone">phone number</p>
+                <button id="editButton">Edit</button>
+            </div>
+        </div>
+        <div class="edit-form" id="editForm" style="display: none;">
+            <h2>Edit profile</h2>
+            <input type="text" id="editName" placeholder="full name" />
+            <input type="email" id="editEmail" placeholder="Email" />
+            <input type="tel" id="editPhone" placeholder="phone number" />
+            <button id="saveButton">Save change</button>
+            <button id="cancelButton">cancel</button>
+        </div>
+        <div class="content">
+            <h1>Create a Post</h1>
+            <form id="postForm">
+                <input type="text" id="postTitle" placeholder="Post Title" required />
+                <textarea id="postContent" placeholder="Post Content" required></textarea>
+                <button type="submit">Create Post</button>
+            </form>
+    
+            <h2>Posts</h2>
+            <div id="postList"></div>
+        </div>
+        <button type="submit"  onclick="window.location.href='search.html'">Search</button>
+    </div>
+
+    <script >
+        document.getElementById('editButton').addEventListener('click', function() {
+    document.getElementById('editForm').style.display = 'block';
+    document.getElementById('editName').value = document.getElementById('name').innerText.split(': ')[1];
+    document.getElementById('editEmail').value = document.getElementById('email').innerText.split(': ')[1];
+    document.getElementById('editPhone').value = document.getElementById('phone').innerText.split(': ')[1];
+});
+
+document.getElementById('saveButton').addEventListener('click', function() {
+    const name = document.getElementById('editName').value;
+    const email = document.getElementById('editEmail').value;
+    const phone = document.getElementById('editPhone').value;
+
+    document.getElementById('name').innerText = 'name: ' + name;
+    document.getElementById('email').innerText = 'email: ' + email;
+    document.getElementById('phone').innerText = 'phone number: ' + phone;
+
+    document.getElementById('editForm').style.display = 'none';
+});
+
+document.getElementById('cancelButton').addEventListener('click', function() {
+    document.getElementById('editForm').style.display = 'none';
+});
+/*------------post-------------------*/
+let editingPostId = null;
+document.getElementById('postForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const title = document.getElementById('postTitle').value;
+    const content = document.getElementById('postContent').value;
+
+    
+    createPost(title, content);
+    document.getElementById('postForm').reset(); // Clear the form
+});
+if (editingPostId) {
+        updatePost(editingPostId, title, content);
+    } else {
+        createPost(title, content);
+    }
+
+    // Clear the form
+    document.getElementById('postForm').reset();
+    editingPostId = null; // Reset editing ID
+
+function createPost(title, content) {
+    const postList = document.getElementById('postList');
+    const postId = Date.now(); // Unique ID for the post
+
+    const postDiv = document.createElement('div');
+    postDiv.classList.add('post');
+    postDiv.setAttribute('data-id', postId);
+
+    const postTitle = document.createElement('h3');
+    postTitle.innerText = title;
+
+    const postContent = document.createElement('p');
+    postContent.innerText = content;
+    const editButton = document.createElement('button');
+    editButton.innerText = 'Edit';
+    editButton.onclick = function() {
+        editPost(postId, title, content);
+    };
+
+    const deleteButton = document.createElement('button');
+    deleteButton.innerText = 'Delete';
+    deleteButton.onclick = function() {
+        deletePost(postId);
+    };
+    const likeSection = document.createElement('div');
+    likeSection.classList.add('like-section');
+
+    const likeCount = document.createElement('span');
+    likeCount.innerText = "Likes: 0";
+
+    const likeButton = document.createElement('button');
+    likeButton.classList.add('like-button');
+    likeButton.innerText = 'Like';
+    likeButton.onclick = function() {
+        likePost(likeCount);
+    };
+    const commentSection = document.createElement('div');
+    commentSection.classList.add('comment-section');
+
+    const commentInput = document.createElement('input');
+    commentInput.placeholder = 'Add a comment...';
+
+    const commentButton = document.createElement('button');
+    commentButton.innerText = 'Comment';
+    commentButton.onclick = function() {
+        addComment(postId, commentInput.value);
+        commentInput.value = ''; // Clear the input
+    };
+
+    postDiv.appendChild(postTitle);
+    postDiv.appendChild(postContent);
+    postDiv.appendChild(editButton);
+    postDiv.appendChild(deleteButton);
+    postList.appendChild(postDiv);
+    likeSection.appendChild(likeCount);
+    likeSection.appendChild(likeButton);
+    postDiv.appendChild(likeSection);
+    commentSection.appendChild(commentInput);
+    commentSection.appendChild(commentButton);
+    postDiv.appendChild(commentSection);
+
+}
+
+
+function editPost(postId, title, content) {
+    editingPostId = postId;
+    document.getElementById('postTitle').value = title;
+    document.getElementById('postContent').value = content;
+}
+
+function updatePost(postId, title, content) {
+    const postDiv = document.querySelector(`.post[data-id='${postId}']`);
+    postDiv.querySelector('h3').innerText = title;
+    postDiv.querySelector('p').innerText = content;
+}
+
+function deletePost(postId) {
+    const postDiv = document.querySelector(`.post[data-id='${postId}']`);
+    postDiv.remove();
+}
+function addComment(postId, comment) {
+    if (!comment) return; // Prevent empty comments
+
+    const postDiv = document.querySelector(`.post[data-id='${postId}']`);
+    const commentDiv = document.createElement('div');
+    commentDiv.classList.add('comment');
+    commentDiv.innerText = comment;
+
+    postDiv.querySelector('.comment-section').appendChild(commentDiv);
+}
+function likePost(likeCount) {
+    const currentLikes = parseInt(likeCount.innerText.split(': ')[1]);
+    likeCount.innerText = "Likes: " + (currentLikes + 1);
+}
+
+    </script>
+</body>
+</html>
